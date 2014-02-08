@@ -38,7 +38,7 @@ CVReturn displayCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow,
 
 CVReturn displayCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow, const CVTimeStamp *inOutputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext)
 {
-    GLTutorialController *controller = (GLTutorialController *)displayLinkContext;
+    GLTutorialController *controller = (__bridge GLTutorialController *)displayLinkContext;
     [controller renderForTime:*inOutputTime];
     return kCVReturnSuccess;
 }
@@ -78,8 +78,8 @@ CVReturn displayCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow,
         NSOpenGLPFANoRecovery   ,
         0
     };
-    NSOpenGLPixelFormat *pixelFormat = [[[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes] autorelease];
-    [self setView:[[[NSOpenGLView alloc] initWithFrame:[[[self window] contentView] bounds] pixelFormat:pixelFormat] autorelease]];
+    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
+    [self setView:[[NSOpenGLView alloc] initWithFrame:[[[self window] contentView] bounds] pixelFormat:pixelFormat]];
     [[[self window] contentView] addSubview:[self view]];
 }
 
@@ -90,7 +90,7 @@ CVReturn displayCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow,
     
     if (kCVReturnSuccess == error)
     {
-        CVDisplayLinkSetOutputCallback(displayLink, displayCallback, self);
+        CVDisplayLinkSetOutputCallback(displayLink, displayCallback, (__bridge void *)(self));
         CVDisplayLinkStart(displayLink);
     }
     else
@@ -322,9 +322,6 @@ CVReturn displayCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *inNow,
     
     CVDisplayLinkStop(displayLink);
     CVDisplayLinkRelease(displayLink);
-    [view release];
-    
-    [super dealloc];
 }
 
 @end
